@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TokoDash</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f7f7f5;--bg3:#f0f0ec;
+  --text:#191919;--text2:#6b6b6b;--text3:#a3a3a3;
+  --border:#e8e8e4;--border2:#d4d4d0;
+  --accent:#191919;--accent-fg:#ffffff;
+  --success-bg:#edf7ee;--success:#2d7d35;
+  --info-bg:#eef3fc;--info:#2b5cc8;
+  --r:6px;--r2:10px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+.side{width:224px;flex-shrink:0;border-right:1px solid var(--border);padding:10px 8px;display:flex;flex-direction:column;background:var(--bg2)}
+.logo{padding:6px 10px 14px;font-size:13.5px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;letter-spacing:-0.2px}
+.logo i{font-size:17px;color:var(--text2)}
+.nav-group-label{font-size:11px;color:var(--text3);padding:10px 10px 4px;letter-spacing:0.05em;font-weight:500}
+.nav{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:var(--r);font-size:13.5px;color:var(--text2);cursor:pointer;transition:background 0.1s;border:none;background:none;width:100%;text-align:left;font-family:inherit}
+.nav:hover{background:var(--bg3);color:var(--text)}
+.nav.on{background:var(--bg3);color:var(--text);font-weight:500}
+.nav i{font-size:16px;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.topbar{padding:0 28px;border-bottom:1px solid var(--border);display:flex;align-items:flex-end;gap:0}
+.tab{padding:12px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.12s;white-space:nowrap}
+.tab.on{color:var(--text);border-bottom:2px solid var(--text);font-weight:500}
+.tab:hover:not(.on){color:var(--text);border-bottom:2px solid var(--border2)}
+.content{flex:1;overflow-y:auto;padding:28px}
+.page-head{margin-bottom:22px}
+.page-title{font-size:21px;font-weight:600;color:var(--text);letter-spacing:-0.4px;line-height:1.2}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:22px}
+.stat{background:var(--bg2);border-radius:var(--r2);padding:14px 16px}
+.stat-lbl{font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-weight:500}
+.stat-val{font-size:20px;font-weight:600;color:var(--text);letter-spacing:-0.5px}
+.stat-val.sm{font-size:14px;font-weight:500;margin-top:4px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.toolbar-count{font-size:13px;color:var(--text2)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:opacity 0.1s}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}
+.btn-primary:hover{opacity:0.85}
+.btn-ghost{background:none;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--bg2);color:var(--text)}
+.btn i{font-size:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;table-layout:fixed}
+.tbl th{text-align:left;padding:7px 12px;font-size:11px;font-weight:500;color:var(--text3);border-bottom:1px solid var(--border);letter-spacing:0.05em;text-transform:uppercase}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg2)}
+.tbl td.name{color:var(--text);font-weight:500}
+.tbl td.id{color:var(--text3);font-size:12px}
+.chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500}
+.chip-green{background:var(--success-bg);color:var(--success)}
+.chip-blue{background:var(--info-bg);color:var(--info)}
+.add-row{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:13px;color:var(--text3);cursor:pointer;border-radius:var(--r)}
+.add-row:hover{background:var(--bg2);color:var(--text2)}
+.add-row i{font-size:14px}
+.empty{padding:48px;text-align:center;color:var(--text3)}
+.empty i{font-size:32px;margin-bottom:10px;display:block}
+.empty p{font-size:13px}
+.modal-wrap{min-height:500px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3)}
+.modal{background:var(--bg);border:1px solid var(--border2);border-radius:var(--r2);padding:24px;width:400px;max-width:94vw}
+.modal-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:18px;letter-spacing:-0.2px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em}
+.field input,.field select{width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--r);font-size:13.5px;color:var(--text);background:var(--bg);font-family:inherit;outline:none;transition:border 0.15s}
+.field input:focus,.field select:focus{border-color:var(--text2)}
+.field select option{background:var(--bg)}
+.modal-hint{font-size:12px;color:var(--text2);background:var(--bg2);border-radius:var(--r);padding:10px 12px;margin-bottom:4px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.log-list{}
+.log-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.log-row:last-child{border-bottom:none}
+.log-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px}
+.log-msg{font-size:13.5px;color:var(--text);line-height:1.5}
+.log-time{font-size:11px;color:var(--text3);margin-top:2px;font-variant-numeric:tabular-nums}
+.divider{height:1px;background:var(--border);margin:0 -28px 22px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback} = React;
+const API = 'http://localhost:3000';
+
+const fmt = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
+const fmtDate = d => new Date(d).toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+function Modal({title,onClose,children}){
+  return(
+    <div className="modal-wrap" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="modal">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:18}}>
+          <div className="modal-title" style={{margin:0}}>{title}</div>
+          <button className="btn btn-ghost" style={{padding:'4px 8px'}} onClick={onClose}><i className="ti ti-x" style={{fontSize:14}}></i></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function BarangPage({barang,onAdd,loading}){
+  const [modal,setModal]=useState(false);
+  const [nama,setNama]=useState('');
+  const [harga,setHarga]=useState('');
+  const submit=async()=>{
+    if(!nama||!harga)return;
+    await onAdd({nama,harga:parseInt(harga)});
+    setNama('');setHarga('');setModal(false);
+  };
+  const minH=barang.length?Math.min(...barang.map(b=>b.harga)):0;
+  const maxH=barang.length?Math.max(...barang.map(b=>b.harga)):0;
+  return(
+    <>
+      <div className="page-head">
+        <div className="page-title">Barang</div>
+        <div className="page-sub">Kelola semua produk yang tersedia di toko.</div>
+      </div>
+      <div className="stats">
+        <div className="stat"><div className="stat-lbl">Total barang</div><div className="stat-val">{barang.length}</div></div>
+        <div className="stat"><div className="stat-lbl">Harga terendah</div><div className="stat-val sm">{barang.length?fmt(minH):'—'}</div></div>
+        <div className="stat"><div className="stat-lbl">Harga tertinggi</div><div className="stat-val sm">{barang.length?fmt(maxH):'—'}</div></div>
+      </div>
+      <div className="toolbar">
+        <div className="toolbar-count">{barang.length} item</div>
+        <button className="btn btn-primary" onClick={()=>setModal(true)}><i className="ti ti-plus"></i>Tambah barang</button>
+      </div>
+      {loading
+        ?<div className="empty"><i className="ti ti-loader"></i><p>Memuat data…</p></div>
+        :barang.length===0
+          ?<div className="empty"><i className="ti ti-box-off"></i><p>Belum ada barang. Tambahkan yang pertama.</p></div>
+          :<>
+            <table className="tbl">
+              <thead><tr><th style={{width:40}}>#</th><th>Nama barang</th><th style={{width:160}}>Harga</th><th style={{width:100}}>Status</th></tr></thead>
+              <tbody>
+                {barang.map((b,i)=>(
+                  <tr key={b.id}>
+                    <td className="id">{i+1}</td>
+                    <td className="name">{b.nama}</td>
+                    <td>{fmt(b.harga)}</td>
+                    <td><span className="chip chip-green">Tersedia</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="add-row" onClick={()=>setModal(true)}><i className="ti ti-plus"></i>Tambah baris baru</div>
+          </>
+      }
+      {modal&&(
+        <div style={{position:'fixed',inset:0,zIndex:50}}>
+          <Modal title="Tambah barang" onClose={()=>setModal(false)}>
+            <div className="field"><label>Nama barang</label><input placeholder="Contoh: Mouse Logitech" value={nama} onChange={e=>setNama(e.target.value)}/></div>
+            <div className="field"><label>Harga (Rp)</label><input type="number" placeholder="85000" value={harga} onChange={e=>setHarga(e.target.value)}/></div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={()=>setModal(false)}>Batal</button>
+              <button className="btn btn-primary" onClick={submit}><i className="ti ti-check"></i>Simpan</button>
+            </div>
+          </Modal>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PembelianPage({pembelian,barang,onAdd,loading}){
+  const [modal,setModal]=useState(false);
+  const [idBarang,setIdBarang]=useState('');
+  const [jumlah,setJumlah]=useState('');
+  const getNama=id=>barang.find(b=>b.id===id)?.nama||`Barang #${id}`;
+  const getHarga=id=>barang.find(b=>b.id===id)?.harga||0;
+  const totalNilai=pembelian.reduce((s,p)=>s+getHarga(p.id_barang)*p.jumlah,0);
+  const submit=async()=>{
+    if(!idBarang||!jumlah)return;
+    await onAdd({id_barang:parseInt(idBarang),jumlah:parseInt(jumlah)});
+    setIdBarang('');setJumlah('');setModal(false);
+  };
+  return(
+    <>
+      <div className="page-head">
+        <div className="page-title">Pembelian</div>
+        <div className="page-sub">Riwayat transaksi dan pembelian barang.</div>
+      </div>
+      <div className="stats">
+        <div className="stat"><div className="stat-lbl">Total transaksi</div><div className="stat-val">{pembelian.length}</div></div>
+        <div className="stat"><div className="stat-lbl">Total nilai</div><div className="stat-val sm">{fmt(totalNilai)}</div></div>
+      </div>
+      <div className="toolbar">
+        <div className="toolbar-count">{pembelian.length} transaksi</div>
+        <button className="btn btn-primary" onClick={()=>setModal(true)}><i className="ti ti-plus"></i>Beli barang</button>
+      </div>
+      {loading
+        ?<div className="empty"><i className="ti ti-loader"></i><p>Memuat data…</p></div>
+        :pembelian.length===0
+          ?<div className="empty"><i className="ti ti-shopping-cart-off"></i><p>Belum ada transaksi pembelian.</p></div>
+          :<>
+            <table className="tbl">
+              <thead><tr><th style={{width:40}}>#</th><th>Barang</th><th style={{width:100}}>Jumlah</th><th style={{width:160}}>Total</th></tr></thead>
+              <tbody>
+                {pembelian.map((p,i)=>(
+                  <tr key={p.id}>
+                    <td className="id">{i+1}</td>
+                    <td className="name">{getNama(p.id_barang)}</td>
+                    <td><span className="chip chip-blue">{p.jumlah} pcs</span></td>
+                    <td>{fmt(getHarga(p.id_barang)*p.jumlah)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="add-row" onClick={()=>setModal(true)}><i className="ti ti-plus"></i>Tambah baris baru</div>
+          </>
+      }
+      {modal&&(
+        <div style={{position:'fixed',inset:0,zIndex:50}}>
+          <Modal title="Beli barang" onClose={()=>setModal(false)}>
+            <div className="field">
+              <label>Pilih barang</label>
+              <select value={idBarang} onChange={e=>setIdBarang(e.target.value)}>
+                <option value="">— Pilih barang —</option>
+                {barang.map(b=><option key={b.id} value={b.id}>{b.nama} · {fmt(b.harga)}</option>)}
+              </select>
+            </div>
+            <div className="field"><label>Jumlah</label><input type="number" min="1" placeholder="1" value={jumlah} onChange={e=>setJumlah(e.target.value)}/></div>
+            {idBarang&&jumlah&&<div className="modal-hint">Total: <strong>{fmt(getHarga(parseInt(idBarang))*parseInt(jumlah))}</strong></div>}
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={()=>setModal(false)}>Batal</button>
+              <button className="btn btn-primary" onClick={submit}><i className="ti ti-check"></i>Beli</button>
+            </div>
+          </Modal>
+        </div>
+      )}
+    </>
+  );
+}
+
+function LogsPage({logs,loading}){
+  return(
+    <>
+      <div className="page-head">
+        <div className="page-title">Activity logs</div>
+        <div className="page-sub">Riwayat aktivitas yang tersimpan di MongoDB.</div>
+      </div>
+      {loading
+        ?<div className="empty"><i className="ti ti-loader"></i><p>Memuat log…</p></div>
+        :logs.length===0
+          ?<div className="empty"><i className="ti ti-notes-off"></i><p>Belum ada log aktivitas.</p></div>
+          :<div className="log-list">
+            {[...logs].reverse().map((log,i)=>{
+              const isPembelian=log.message?.toLowerCase().includes('pembelian');
+              return(
+                <div className="log-row" key={log._id||i}>
+                  <div className="log-dot" style={{background:isPembelian?'#2b5cc8':'#2d7d35'}}></div>
+                  <div>
+                    <div className="log-msg">{log.message}</div>
+                    <div className="log-time">{fmtDate(log.timestamp)}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+      }
+    </>
+  );
+}
+
+function App(){
+  const [page,setPage]=useState('barang');
+  const [barang,setBarang]=useState([]);
+  const [pembelian,setPembelian]=useState([]);
+  const [logs,setLogs]=useState([]);
+  const [loading,setLoading]=useState(false);
+
+  const fetchAll=useCallback(async()=>{
+    setLoading(true);
+    try{
+      const [b,p,l]=await Promise.all([
+        fetch(`${API}/barang`).then(r=>r.json()).catch(()=>[]),
+        fetch(`${API}/pembelian`).then(r=>r.json()).catch(()=>[]),
+        fetch(`${API}/logs`).then(r=>r.json()).catch(()=>[]),
+      ]);
+      setBarang(Array.isArray(b)?b:[]);
+      setPembelian(Array.isArray(p)?p:[]);
+      setLogs(Array.isArray(l)?l:[]);
+    }catch(e){}
+    setLoading(false);
+  },[]);
+
+  useEffect(()=>{fetchAll();},[fetchAll]);
+
+  const addBarang=async data=>{
+    await fetch(`${API}/barang`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    fetchAll();
+  };
+  const addPembelian=async data=>{
+    await fetch(`${API}/pembelian`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    fetchAll();
+  };
+
+  const nav=[
+    {key:'barang',label:'Barang',icon:'package'},
+    {key:'pembelian',label:'Pembelian',icon:'shopping-cart'},
+    {key:'logs',label:'Activity logs',icon:'list-details'},
+  ];
+
+  const tabs={
+    barang:['Semua barang'],
+    pembelian:['Semua transaksi'],
+    logs:['Log terbaru'],
+  };
+
+  return(
+    <div className="app">
+      <div className="side">
+        <div className="logo"><i className="ti ti-layout-sidebar" aria-hidden="true"></i>TokoDash</div>
+        {nav.map(n=>(
+          <button key={n.key} className={`nav${page===n.key?' on':''}`} onClick={()=>setPage(n.key)}>
+            <i className={`ti ti-${n.icon}`} aria-hidden="true"></i>{n.label}
+          </button>
+        ))}
+        <div style={{flex:1}}></div>
+        <button className="nav" onClick={fetchAll}><i className="ti ti-refresh" aria-hidden="true"></i>Refresh</button>
+      </div>
+      <div className="main">
+        <div className="topbar">
+          {(tabs[page]||[]).map(t=>(
+            <div key={t} className="tab on">{t}</div>
+          ))}
+        </div>
+        <div className="content">
+          {page==='barang'&&<BarangPage barang={barang} onAdd={addBarang} loading={loading}/>}
+          {page==='pembelian'&&<PembelianPage pembelian={pembelian} barang={barang} onAdd={addPembelian} loading={loading}/>}
+          {page==='logs'&&<LogsPage logs={logs} loading={loading}/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
