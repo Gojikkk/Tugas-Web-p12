@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TokoDash</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div class="app">
+  <div class="side">
+    <div class="logo"><i class="ti ti-layout-sidebar"></i>TokoDash</div>
+    <button class="nav on" onclick="navigate('barang')"><i class="ti ti-package"></i>Barang</button>
+    <button class="nav" onclick="navigate('pembelian')"><i class="ti ti-shopping-cart"></i>Pembelian</button>
+    <button class="nav" onclick="navigate('logs')"><i class="ti ti-list-details"></i>Activity logs</button>
+    <div style="flex:1"></div>
+    <button class="nav" onclick="fetchAll()"><i class="ti ti-refresh"></i>Refresh</button>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="tab on" id="tab-label">Semua barang</div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="js/api.js"></script>
+<script src="js/barang.js"></script>
+<script src="js/pembelian.js"></script>
+<script src="js/logs.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
